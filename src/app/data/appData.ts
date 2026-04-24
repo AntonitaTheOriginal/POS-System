@@ -14,6 +14,8 @@ export interface BusinessTypeConfig {
   hasTables: boolean;
   supportedOrderTypes: OrderType[];
   taxLabel: string;
+  kitchenLabel: string;
+  orderLabel: string;
 }
 
 export const businessTypeConfigs: Record<BusinessType, BusinessTypeConfig> = {
@@ -26,7 +28,9 @@ export const businessTypeConfigs: Record<BusinessType, BusinessTypeConfig> = {
     description: 'Full-service restaurant with all roles and features',
     hasTables: true,
     supportedOrderTypes: ['dine-in', 'takeaway'],
-    taxLabel: 'GST'
+    taxLabel: 'GST',
+    kitchenLabel: 'Kitchen',
+    orderLabel: 'Order'
   },
   'ice-cream': {
     type: 'ice-cream',
@@ -37,7 +41,9 @@ export const businessTypeConfigs: Record<BusinessType, BusinessTypeConfig> = {
     description: 'Ice cream parlor - counter service only, no waiters or kitchen',
     hasTables: false,
     supportedOrderTypes: ['takeaway'],
-    taxLabel: 'GST'
+    taxLabel: 'GST',
+    kitchenLabel: 'Station',
+    orderLabel: 'Bill'
   },
   'fast-food': {
     type: 'fast-food',
@@ -48,7 +54,9 @@ export const businessTypeConfigs: Record<BusinessType, BusinessTypeConfig> = {
     description: 'Fast food - counter service with kitchen, no table service',
     hasTables: false,
     supportedOrderTypes: ['takeaway'],
-    taxLabel: 'GST'
+    taxLabel: 'GST',
+    kitchenLabel: 'Kitchen',
+    orderLabel: 'Order'
   },
   'cafe': {
     type: 'cafe',
@@ -59,7 +67,9 @@ export const businessTypeConfigs: Record<BusinessType, BusinessTypeConfig> = {
     description: 'Cafe with table service for coffee and snacks',
     hasTables: true,
     supportedOrderTypes: ['dine-in', 'takeaway'],
-    taxLabel: 'VAT'
+    taxLabel: 'VAT',
+    kitchenLabel: 'Counter',
+    orderLabel: 'Order'
   },
   'bakery': {
     type: 'bakery',
@@ -70,7 +80,9 @@ export const businessTypeConfigs: Record<BusinessType, BusinessTypeConfig> = {
     description: 'Bakery - counter service for fresh baked goods',
     hasTables: false,
     supportedOrderTypes: ['takeaway'],
-    taxLabel: 'GST'
+    taxLabel: 'GST',
+    kitchenLabel: 'Prep',
+    orderLabel: 'Invoice'
   },
   'bar': {
     type: 'bar',
@@ -81,7 +93,9 @@ export const businessTypeConfigs: Record<BusinessType, BusinessTypeConfig> = {
     description: 'Bar with table service and alcohol management',
     hasTables: true,
     supportedOrderTypes: ['dine-in'],
-    taxLabel: 'Service Tax'
+    taxLabel: 'Service Tax',
+    kitchenLabel: 'Bar Station',
+    orderLabel: 'Check'
   }
 };
 
@@ -238,4 +252,42 @@ export const defaultSettings: Settings = {
   enabledPaymentModes: ['cash', 'upi'],
   currency: '₹',
   receiptFooter: 'Thank you for dining with us! Please visit again.'
+};
+export const defaultMenuTemplates: Record<BusinessType, MenuItem[]> = {
+  "restaurant": [
+    { id: "r1", name: "Paneer Tikka", price: 220, category: "Starters", type: "veg", available: true },
+    { id: "r2", name: "Butter Chicken", price: 340, category: "Main Course", type: "nonveg", available: true },
+    { id: "r3", name: "Dal Makhani", price: 220, category: "Main Course", type: "veg", available: true },
+    { id: "r4", name: "Butter Naan", price: 50, category: "Breads", type: "veg", available: true }
+  ],
+  "ice-cream": [
+    { id: "ic1", name: "Vanilla Scoop", price: 60, category: "Desserts", type: "veg", available: true },
+    { id: "ic2", name: "Chocolate Fudge", price: 120, category: "Desserts", type: "veg", available: true },
+    { id: "ic3", name: "Mango Delight", price: 90, category: "Desserts", type: "veg", available: true },
+    { id: "ic4", name: "Cold Coffee", price: 80, category: "Beverages", type: "veg", available: true }
+  ],
+  "fast-food": [
+    { id: "ff1", name: "Veg Burger", price: 99, category: "Main Course", type: "veg", available: true },
+    { id: "ff2", name: "Chicken Burger", price: 129, category: "Main Course", type: "nonveg", available: true },
+    { id: "ff3", name: "French Fries", price: 79, category: "Starters", type: "veg", available: true },
+    { id: "ff4", name: "Coke", price: 40, category: "Beverages", type: "veg", available: true }
+  ],
+  "cafe": [
+    { id: "c1", name: "Cappuccino", price: 120, category: "Beverages", type: "veg", available: true },
+    { id: "c2", name: "Cafe Latte", price: 130, category: "Beverages", type: "veg", available: true },
+    { id: "c3", name: "Paneer Sandwich", price: 150, category: "Starters", type: "veg", available: true },
+    { id: "c4", name: "Brownie", price: 90, category: "Desserts", type: "veg", available: true }
+  ],
+  "bakery": [
+    { id: "b1", name: "Chocolate Cake (1kg)", price: 850, category: "Desserts", type: "veg", available: true },
+    { id: "b2", name: "Red Velvet Pastry", price: 120, category: "Desserts", type: "veg", available: true },
+    { id: "b3", name: "Fruit Muffin", price: 60, category: "Desserts", type: "veg", available: true },
+    { id: "b4", name: "Black Forest Cake", price: 750, category: "Desserts", type: "veg", available: true }
+  ],
+  "bar": [
+    { id: "br1", name: "Draft Beer (500ml)", price: 250, category: "Beverages", type: "veg", available: true },
+    { id: "br2", name: "Whiskey Sour", price: 450, category: "Beverages", type: "veg", available: true },
+    { id: "br3", name: "Peanut Masala", price: 120, category: "Starters", type: "veg", available: true },
+    { id: "br4", name: "Chicken Wings", price: 320, category: "Starters", type: "nonveg", available: true }
+  ]
 };

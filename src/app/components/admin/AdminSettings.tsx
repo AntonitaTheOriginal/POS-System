@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { businessTypeConfigs } from '../../data/appData';
 
 export function AdminSettings() {
-  const { settings, updateSettings } = useApp();
+  const { settings, updateSettings, resetToDefaultMenu } = useApp();
   const [localSettings, setLocalSettings] = useState(settings);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -134,6 +134,22 @@ export function AdminSettings() {
                 </SelectContent>
               </Select>
               <p className="text-xs text-gray-500">This changes available roles and features.</p>
+            </div>
+
+            <div className="pt-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  if (confirm(`This will delete your current menu and categories and replace them with the standard ${businessTypeConfigs[localSettings.businessType].name} template. Continue?`)) {
+                    resetToDefaultMenu();
+                    alert('Menu updated to template!');
+                  }
+                }}
+                className="w-full sm:w-auto"
+              >
+                Apply {businessTypeConfigs[localSettings.businessType].name} Menu Template
+              </Button>
             </div>
 
             <div className="space-y-2">

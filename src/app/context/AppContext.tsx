@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { User, Order, Table, MenuItem, OrderItem, Settings, mockUsers, mockTables, mockMenuItems, defaultSettings } from '../data/appData';
+import { User, Order, Table, MenuItem, OrderItem, Settings, mockUsers, mockTables, mockMenuItems, defaultSettings, businessTypeConfigs, defaultMenuTemplates } from '../data/appData';
 
 interface AppContextType {
   // Authentication
@@ -40,6 +40,7 @@ interface AppContextType {
   // Settings
   settings: Settings;
   updateSettings: (updates: Partial<Settings>) => void;
+  resetToDefaultMenu: () => void;
 
   // Cart (for current order being created)
   cart: OrderItem[];
@@ -315,6 +316,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSettings(prev => ({ ...prev, ...updates }));
   };
 
+  const resetToDefaultMenu = () => {
+    const template = defaultMenuTemplates[settings.businessType];
+    const config = businessTypeConfigs[settings.businessType];
+    setMenuItems(template);
+    setCategories(config.editableCategories);
+  };
+
   const addToCart = (item: MenuItem) => {
     setCart(prev => {
       const existing = prev.find(i => i.menuItem.id === item.id);
@@ -374,6 +382,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       deleteUser,
       settings,
       updateSettings,
+      resetToDefaultMenu,
       cart,
       addToCart,
       updateCartItemQuantity,
@@ -385,13 +394,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       orderType,
       setOrderType,
       activeOrderId,
-      setActiveOrderId,
-      getOrderById,
+      setActiveOrderId
     }}>
       {children}
     </AppContext.Provider>
   );
-}
+};
 
 export function useApp() {
   const context = useContext(AppContext);

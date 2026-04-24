@@ -62,7 +62,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div>
-                <h1 className="text-2xl">SmartServe Admin</h1>
+                <h1 className="text-2xl">SmartServe {businessConfig.name} Admin</h1>
                 <p className="text-sm text-gray-600">{settings.restaurantName}</p>
               </div>
               {/* Business Type Badge */}

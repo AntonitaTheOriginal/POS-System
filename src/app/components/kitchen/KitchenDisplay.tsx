@@ -3,6 +3,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { useApp } from '../../context/AppContext';
+import { businessTypeConfigs } from '../../data/appData';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,7 +19,8 @@ import { LogOut } from 'lucide-react';
 
 export function KitchenDisplay() {
   const navigate = useNavigate();
-  const { orders, updateOrderStatus, currentUser, logout } = useApp();
+  const { orders, updateOrderStatus, currentUser, logout, settings } = useApp();
+  const businessConfig = businessTypeConfigs[settings.businessType];
 
   const activeOrders = orders.filter(o => 
     o.status === 'new' || o.status === 'preparing' || o.status === 'ready'
@@ -79,7 +81,7 @@ export function KitchenDisplay() {
       <div className="bg-white border-b p-4 sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl">Kitchen Display</h1>
+            <h1 className="text-2xl">{businessConfig.kitchenLabel} Display</h1>
             <p className="text-sm text-gray-600">Welcome, {currentUser?.name}</p>
           </div>
           <div className="flex items-center gap-3">

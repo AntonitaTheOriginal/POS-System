@@ -18,24 +18,25 @@ export function AdminReports() {
 
   // Filter orders by date range using completedAt for accurate revenue reporting
   const filteredOrders = orders.filter(order => {
+    if (!order) return false;
     const reportDate = order.completedAt ? new Date(order.completedAt) : new Date(order.createdAt);
     return reportDate >= dateRange.from && reportDate <= dateRange.to;
   });
 
-  const paidOrders = filteredOrders.filter(o => !!o.paymentMode || o.status === 'completed');
+  const paidOrders = filteredOrders.filter(o => o && (!!o.paymentMode || o.status === 'completed'));
   
   // Calculate statistics
-  const totalSales = paidOrders.reduce((sum, order) => sum + order.total, 0);
+  const totalSales = paidOrders.reduce((sum, order) => sum + (order?.total || 0), 0);
   const totalOrders = paidOrders.length;
   const avgOrderValue = totalOrders > 0 ? Math.round(totalSales / totalOrders) : 0;
   
   // Profit calculation (assuming 40% profit margin)
   const estimatedProfit = Math.round(totalSales * 0.4);
 
-  const cashOrders = paidOrders.filter(o => o.paymentMode === 'cash');
-  const upiOrders = paidOrders.filter(o => o.paymentMode === 'upi');
-  const cashAmount = cashOrders.reduce((sum, o) => sum + o.total, 0);
-  const upiAmount = upiOrders.reduce((sum, o) => sum + o.total, 0);
+  const cashOrders = paidOrders.filter(o => o?.paymentMode === 'cash');
+  const upiOrders = paidOrders.filter(o => o?.paymentMode === 'upi');
+  const cashAmount = cashOrders.reduce((sum, o) => sum + (o?.total || 0), 0);
+  const upiAmount = upiOrders.reduce((sum, o) => sum + (o?.total || 0), 0);
 
   const handlePrint = () => {
     window.print();
@@ -145,7 +146,7 @@ export function AdminReports() {
             <div className="space-y-2">
               <p className="text-sm text-gray-600">Total Sales</p>
               <p className="text-3xl">₹{totalSales.toLocaleString()}</p>
-              <p className="text-xs text-gray-500">{completedOrders.length} orders</p>
+              <p className="text-xs text-gray-500">{paidOrders.length} orders</p>
             </div>
           </Card>
 

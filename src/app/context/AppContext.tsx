@@ -67,40 +67,70 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
 
   const [orders, setOrders] = useState<Order[]>(() => {
-    const saved = localStorage.getItem('orders');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('orders');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Error parsing orders from localStorage', e);
+      return [];
+    }
   });
 
   const [tables, setTables] = useState<Table[]>(() => {
-    const saved = localStorage.getItem('tables');
-    return saved ? JSON.parse(saved) : mockTables;
+    try {
+      const saved = localStorage.getItem('tables');
+      return saved ? JSON.parse(saved) : mockTables;
+    } catch (e) {
+      console.error('Error parsing tables from localStorage', e);
+      return mockTables;
+    }
   });
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>(() => {
-    const saved = localStorage.getItem('menuItems');
-    return saved ? JSON.parse(saved) : mockMenuItems;
+    try {
+      const saved = localStorage.getItem('menuItems');
+      return saved ? JSON.parse(saved) : mockMenuItems;
+    } catch (e) {
+      console.error('Error parsing menuItems from localStorage', e);
+      return mockMenuItems;
+    }
   });
 
   const [users, setUsers] = useState<User[]>(() => {
-    const saved = localStorage.getItem('users');
-    return saved ? JSON.parse(saved) : mockUsers;
+    try {
+      const saved = localStorage.getItem('users');
+      return saved ? JSON.parse(saved) : mockUsers;
+    } catch (e) {
+      console.error('Error parsing users from localStorage', e);
+      return mockUsers;
+    }
   });
 
   const [settings, setSettings] = useState<Settings>(() => {
-    const saved = localStorage.getItem('settings');
-    return saved ? JSON.parse(saved) : defaultSettings;
+    try {
+      const saved = localStorage.getItem('settings');
+      return saved ? JSON.parse(saved) : defaultSettings;
+    } catch (e) {
+      console.error('Error parsing settings from localStorage', e);
+      return defaultSettings;
+    }
   });
 
   const [categories, setCategories] = useState<string[]>(() => {
-    const saved = localStorage.getItem('categories');
-    return saved ? JSON.parse(saved) : [
-      'Starters',
-      'Main Course',
-      'Breads',
-      'Rice & Biryani',
-      'Desserts',
-      'Beverages'
-    ];
+    try {
+      const saved = localStorage.getItem('categories');
+      return saved ? JSON.parse(saved) : [
+        'Starters',
+        'Main Course',
+        'Breads',
+        'Rice & Biryani',
+        'Desserts',
+        'Beverages'
+      ];
+    } catch (e) {
+      console.error('Error parsing categories from localStorage', e);
+      return ['Starters', 'Main Course', 'Breads', 'Rice & Biryani', 'Desserts', 'Beverages'];
+    }
   });
 
   const [cart, setCart] = useState<OrderItem[]>([]);

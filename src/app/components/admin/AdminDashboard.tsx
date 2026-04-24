@@ -17,21 +17,21 @@ export function AdminDashboard() {
     return reportDate.toDateString() === today;
   });
 
-  const paidOrders = todayOrders.filter(o => !!o.paymentMode || o.status === 'completed');
-  const todaySales = paidOrders.reduce((sum, order) => sum + order.total, 0);
+  const paidOrders = todayOrders.filter(o => o && (!!o.paymentMode || o.status === 'completed'));
+  const todaySales = paidOrders.reduce((sum, order) => sum + (order?.total || 0), 0);
   const totalOrders = paidOrders.length;
   const avgOrderValue = totalOrders > 0 ? Math.round(todaySales / totalOrders) : 0;
 
-  const cashOrders = paidOrders.filter(o => o.paymentMode === 'cash');
-  const upiOrders = paidOrders.filter(o => o.paymentMode === 'upi');
-  const cashAmount = cashOrders.reduce((sum, o) => sum + o.total, 0);
-  const upiAmount = upiOrders.reduce((sum, o) => sum + o.total, 0);
+  const cashOrders = paidOrders.filter(o => o?.paymentMode === 'cash');
+  const upiOrders = paidOrders.filter(o => o?.paymentMode === 'upi');
+  const cashAmount = cashOrders.reduce((sum, o) => sum + (o?.total || 0), 0);
+  const upiAmount = upiOrders.reduce((sum, o) => sum + (o?.total || 0), 0);
 
-  const dineInOrders = paidOrders.filter(o => o.type === 'dine-in');
-  const takeawayOrders = paidOrders.filter(o => o.type === 'takeaway');
+  const dineInOrders = paidOrders.filter(o => o?.type === 'dine-in');
+  const takeawayOrders = paidOrders.filter(o => o?.type === 'takeaway');
 
-  const lifetimePaidOrders = orders.filter(o => !!o.paymentMode || o.status === 'completed');
-  const lifetimeRevenue = lifetimePaidOrders.reduce((sum, o) => sum + o.total, 0);
+  const lifetimePaidOrders = orders.filter(o => o && (!!o.paymentMode || o.status === 'completed'));
+  const lifetimeRevenue = lifetimePaidOrders.reduce((sum, o) => sum + (o?.total || 0), 0);
 
   // Prepare chart data
   // Orders vs Time (hourly breakdown)

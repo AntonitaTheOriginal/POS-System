@@ -218,7 +218,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         // Fetch Tables
         const { data: tablesData } = await supabase.from('tables').select('*');
-        if (tablesData) setTables(tablesData);
+        if (tablesData) {
+          const formattedTables = tablesData.map(t => ({
+            id: t.id,
+            number: t.number,
+            capacity: t.capacity,
+            status: t.status,
+            currentOrderId: t.current_order_id,
+            assignedWaiterId: t.assigned_waiter_id
+          }));
+          setTables(formattedTables);
+        }
 
         // Fetch Orders (including items)
         const { data: ordersData } = await supabase.from('orders').select('*, order_items(*, menu_items(*))');

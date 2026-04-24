@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User, Order, Table, MenuItem, OrderItem, Settings, mockUsers, mockTables, mockMenuItems, defaultSettings, businessTypeConfigs, defaultMenuTemplates, PaymentMode } from '../data/appData';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 interface AppContextType {
   // Authentication

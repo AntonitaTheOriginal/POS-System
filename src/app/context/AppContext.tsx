@@ -389,18 +389,42 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return orders.find(o => o.id === orderId);
   };
 
-  const addTable = (table: Table) => {
+  const addTable = async (table: Table) => {
     setTables(prev => [...prev, table]);
+    try {
+      await supabase.from('tables').insert([{
+        id: table.id,
+        number: table.number,
+        capacity: table.capacity,
+        status: table.status,
+        current_order_id: table.currentOrderId,
+        assigned_waiter_id: table.assignedWaiterId
+      }]);
+    } catch (error) { console.error('Error adding table:', error); }
   };
 
-  const updateTable = (id: string, updates: Partial<Table>) => {
+  const updateTable = async (id: string, updates: Partial<Table>) => {
     setTables(prev => prev.map(table =>
       table.id === id ? { ...table, ...updates } : table
     ));
+    
+    const dbUpdates: any = {};
+    if (updates.number !== undefined) dbUpdates.number = updates.number;
+    if (updates.capacity !== undefined) dbUpdates.capacity = updates.capacity;
+    if (updates.status !== undefined) dbUpdates.status = updates.status;
+    if (updates.currentOrderId !== undefined) dbUpdates.current_order_id = updates.currentOrderId;
+    if (updates.assignedWaiterId !== undefined) dbUpdates.assigned_waiter_id = updates.assignedWaiterId;
+
+    try {
+      await supabase.from('tables').update(dbUpdates).eq('id', id);
+    } catch (error) { console.error('Error updating table:', error); }
   };
 
-  const deleteTable = (id: string) => {
+  const deleteTable = async (id: string) => {
     setTables(prev => prev.filter(table => table.id !== id));
+    try {
+      await supabase.from('tables').delete().eq('id', id);
+    } catch (error) { console.error('Error deleting table:', error); }
   };
 
   const updateTableStatus = (tableId: string, status: Table['status'], orderId?: string) => {
@@ -409,51 +433,83 @@ export function AppProvider({ children }: { children: ReactNode }) {
     ));
   };
 
-  const updateMenuItem = (id: string, updates: Partial<MenuItem>) => {
+  const updateMenuItem = async (id: string, updates: Partial<MenuItem>) => {
     setMenuItems(prev => prev.map(item =>
       item.id === id ? { ...item, ...updates } : item
     ));
+    try {
+      await supabase.from('menu_items').update(updates).eq('id', id);
+    } catch (error) { console.error('Error updating menu item:', error); }
   };
 
-  const addMenuItem = (item: MenuItem) => {
+  const addMenuItem = async (item: MenuItem) => {
     setMenuItems(prev => [...prev, item]);
+    try {
+      await supabase.from('menu_items').insert([item]);
+    } catch (error) { console.error('Error adding menu item:', error); }
   };
 
-  const deleteMenuItem = (id: string) => {
+  const deleteMenuItem = async (id: string) => {
     setMenuItems(prev => prev.filter(item => item.id !== id));
+    try {
+      await supabase.from('menu_items').delete().eq('id', id);
+    } catch (error) { console.error('Error deleting menu item:', error); }
   };
 
-  const addCategory = (category: string) => {
+  const addCategory = async (category: string) => {
     if (!categories.includes(category)) {
       setCategories(prev => [...prev, category]);
+      try {
+        await supabase.from('categories').insert([{ name: category }]);
+      } catch (error) { console.error('Error adding category:', error); }
     }
   };
 
-  const updateCategory = (oldName: string, newName: string) => {
+  const updateCategory = async (oldName: string, newName: string) => {
     setCategories(prev => prev.map(c => c === oldName ? newName : c));
-    // Update all items with this category
     setMenuItems(prev => prev.map(item => 
       item.category === oldName ? { ...item, category: newName } : item
     ));
+    try {
+      await supabase.from('categories').update({ name: newName }).eq('name', oldName);
+    } catch (error) { console.error('Error updating category:', error); }
   };
 
-  const deleteCategory = (category: string) => {
+  const deleteCategory = async (category: string) => {
     setCategories(prev => prev.filter(c => c !== category));
-    // Optionally handle items in this category - here we just keep them but they won't show in filtered views
+    try {
+      await supabase.from('categories').delete().eq('name', category);
+    } catch (error) { console.error('Error deleting category:', error); }
   };
 
-  const addUser = (user: User) => {
+  const addUser = async (user: User) => {
     setUsers(prev => [...prev, user]);
+    try {
+      await supabase.from('users').insert([{
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        phone: user.phone,
+        role: user.role,
+        password: user.password
+      }]);
+    } catch (error) { console.error('Error adding user:', error); }
   };
 
-  const updateUser = (id: string, updates: Partial<User>) => {
+  const updateUser = async (id: string, updates: Partial<User>) => {
     setUsers(prev => prev.map(user =>
       user.id === id ? { ...user, ...updates } : user
     ));
+    try {
+      await supabase.from('users').update(updates).eq('id', id);
+    } catch (error) { console.error('Error updating user:', error); }
   };
 
-  const deleteUser = (id: string) => {
+  const deleteUser = async (id: string) => {
     setUsers(prev => prev.filter(user => user.id !== id));
+    try {
+      await supabase.from('users').delete().eq('id', id);
+    } catch (error) { console.error('Error deleting user:', error); }
   };
 
   const updateSettings = async (updates: Partial<Settings>) => {

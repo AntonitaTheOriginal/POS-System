@@ -31,7 +31,7 @@ export function AdminSettings() {
     }, 500);
   };
 
-  const togglePaymentMode = (mode: 'cash' | 'upi') => {
+  const togglePaymentMode = (mode: 'cash' | 'upi' | 'card') => {
     const updated = localSettings.enabledPaymentModes.includes(mode)
       ? localSettings.enabledPaymentModes.filter(m => m !== mode)
       : [...localSettings.enabledPaymentModes, mode];
@@ -208,6 +208,17 @@ export function AdminSettings() {
               <Switch
                 checked={localSettings.enabledPaymentModes.includes('upi')}
                 onCheckedChange={() => togglePaymentMode('upi')}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-4 border rounded-lg bg-gray-50/50">
+              <div>
+                <p className="font-medium">Card Payments</p>
+                <p className="text-sm text-gray-600">Credit & Debit cards</p>
+              </div>
+              <Switch
+                checked={localSettings.enabledPaymentModes.includes('card')}
+                onCheckedChange={() => togglePaymentMode('card')}
               />
             </div>
           </div>

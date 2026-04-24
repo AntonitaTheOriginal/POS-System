@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { User, Order, Table, MenuItem, OrderItem, Settings, mockUsers, mockTables, mockMenuItems, defaultSettings, businessTypeConfigs, defaultMenuTemplates } from '../data/appData';
+import { User, Order, Table, MenuItem, OrderItem, Settings, mockUsers, mockTables, mockMenuItems, defaultSettings, businessTypeConfigs, defaultMenuTemplates, PaymentMode } from '../data/appData';
 import { supabase } from '../lib/supabase';
 
 interface AppContextType {
@@ -12,7 +12,7 @@ interface AppContextType {
   orders: Order[];
   addOrder: (order: Order) => void;
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
-  completeOrder: (orderId: string, paymentMode: 'cash' | 'upi', amountReceived: number) => void;
+  completeOrder: (orderId: string, paymentMode: PaymentMode, amountReceived: number) => void;
   getOrderById: (orderId: string) => Order | undefined;
 
   // Tables
@@ -319,7 +319,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const completeOrder = async (orderId: string, paymentMode: 'cash' | 'upi', amountReceived: number) => {
+  const completeOrder = async (orderId: string, paymentMode: PaymentMode, amountReceived: number) => {
     const completedAt = new Date().toISOString();
     
     setOrders(prev => prev.map(order =>

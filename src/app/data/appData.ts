@@ -133,7 +133,7 @@ export interface Table {
 // Orders
 export type OrderType = 'dine-in' | 'takeaway';
 export type OrderStatus = 'new' | 'preparing' | 'ready' | 'served' | 'completed';
-export type PaymentMode = 'cash' | 'upi';
+export type PaymentMode = 'cash' | 'upi' | 'card';
 
 export interface OrderItem {
   menuItem: MenuItem;
@@ -249,7 +249,7 @@ export const defaultSettings: Settings = {
   email: 'contact@tandoorexpress.com',
   businessType: 'restaurant',
   gstPercentage: 5,
-  enabledPaymentModes: ['cash', 'upi'],
+  enabledPaymentModes: ['cash', 'upi', 'card'],
   currency: '₹',
   receiptFooter: 'Thank you for dining with us! Please visit again.'
 };

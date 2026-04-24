@@ -189,8 +189,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setIsLoading(true);
         
         // Fetch Settings
-        const { data: settingsData } = await supabase.from('settings').select('*').single();
-        if (settingsData) setSettings(settingsData);
+        const { data: settingsData } = await supabase.from('settings').select('*').maybeSingle();
+        if (settingsData) {
+          setSettings({
+            restaurantName: settingsData.restaurant_name,
+            address: settingsData.address || '',
+            phone: settingsData.phone || '',
+            email: settingsData.email || '',
+            businessType: settingsData.business_type,
+            gstPercentage: settingsData.gst_percentage,
+            enabledPaymentModes: defaultSettings.enabledPaymentModes, // Not in DB schema yet
+            currency: settingsData.currency,
+            receiptFooter: settingsData.receipt_footer || ''
+          });
+        }
 
         // Fetch Categories
         const { data: categoriesData } = await supabase.from('categories').select('name');
@@ -212,13 +224,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const { data: ordersData } = await supabase.from('orders').select('*, order_items(*, menu_items(*))');
         if (ordersData) {
           const formattedOrders = ordersData.map(o => ({
-            ...o,
+            id: o.id,
+            orderNumber: o.order_number,
+            type: o.type,
+            tableId: o.table_id,
+            subtotal: o.subtotal,
+            gst: o.gst,
+            total: o.total,
+            status: o.status,
+            paymentMode: o.payment_mode,
+            amountReceived: o.amount_received,
+            createdBy: o.created_by,
+            completedAt: o.completed_at,
+            createdAt: o.created_at,
             items: o.order_items.map((oi: any) => ({
-              ...oi,
-              menuItem: oi.menu_items
+              menuItem: oi.menu_items,
+              quantity: oi.quantity,
+              notes: oi.notes
             }))
           }));
-          setOrders(formattedOrders);
+          setOrders(formattedOrders as any);
         }
 
       } catch (err) {

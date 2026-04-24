@@ -148,7 +148,7 @@ export function AdminDashboard() {
             <div className="space-y-2">
               <p className="text-sm text-gray-400">Lifetime Revenue</p>
               <p className="text-3xl font-bold text-green-400">₹{lifetimeRevenue.toLocaleString()}</p>
-              <p className="text-xs text-gray-500">{lifetimeCompletedOrders.length} total sales</p>
+              <p className="text-xs text-gray-500">{lifetimePaidOrders.length} total sales</p>
             </div>
           </Card>
         </div>

@@ -27,6 +27,7 @@ export function AdminBilling() {
   const totalRevenue = paidOrders.reduce((sum, o) => sum + o.total, 0);
   const cashTotal = paidOrders.filter(o => o.paymentMode === 'cash').reduce((sum, o) => sum + o.total, 0);
   const upiTotal = paidOrders.filter(o => o.paymentMode === 'upi').reduce((sum, o) => sum + o.total, 0);
+  const cardTotal = paidOrders.filter(o => o.paymentMode === 'card').reduce((sum, o) => sum + o.total, 0);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
@@ -98,6 +99,7 @@ export function AdminBilling() {
                 <div className="flex justify-between items-center mt-1">
                   <span className="text-xs text-muted-foreground">Cash: ₹{cashTotal}</span>
                   <span className="text-xs text-muted-foreground">UPI: ₹{upiTotal}</span>
+                  <span className="text-xs text-muted-foreground">Card: ₹{cardTotal}</span>
                 </div>
               </div>
             </div>

@@ -24,8 +24,10 @@ export function AdminDashboard() {
 
   const cashOrders = paidOrders.filter(o => o?.paymentMode === 'cash');
   const upiOrders = paidOrders.filter(o => o?.paymentMode === 'upi');
+  const cardOrders = paidOrders.filter(o => o?.paymentMode === 'card');
   const cashAmount = cashOrders.reduce((sum, o) => sum + (o?.total || 0), 0);
   const upiAmount = upiOrders.reduce((sum, o) => sum + (o?.total || 0), 0);
+  const cardAmount = cardOrders.reduce((sum, o) => sum + (o?.total || 0), 0);
 
   const dineInOrders = paidOrders.filter(o => o?.type === 'dine-in');
   const takeawayOrders = paidOrders.filter(o => o?.type === 'takeaway');
@@ -53,9 +55,10 @@ export function AdminDashboard() {
   const paymentData = [
     { name: 'Cash', value: cashAmount, count: cashOrders.length },
     { name: 'UPI', value: upiAmount, count: upiOrders.length },
+    { name: 'Card', value: cardAmount, count: cardOrders.length },
   ].filter(d => d.value > 0);
 
-  const COLORS = ['#10b981', '#3b82f6'];
+  const COLORS = ['#10b981', '#3b82f6', '#f59e0b'];
 
   return (
     <AdminLayout>
@@ -154,7 +157,7 @@ export function AdminDashboard() {
         </div>
 
         {/* Payment Breakdown */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="p-6 shadow-sm">
             <h3 className="font-medium mb-4 flex items-center gap-2">
               <span>💵</span> Cash Payments
@@ -183,6 +186,22 @@ export function AdminDashboard() {
               <div className="flex justify-between pt-2 border-t">
                 <span className="text-gray-600">Amount</span>
                 <span className="text-2xl font-medium">₹{upiAmount.toLocaleString()}</span>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 shadow-sm md:col-span-2 lg:col-span-1">
+            <h3 className="font-medium mb-4 flex items-center gap-2">
+              <span>💳</span> Card Payments
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Orders</span>
+                <span className="text-lg font-medium">{cardOrders.length}</span>
+              </div>
+              <div className="flex justify-between pt-2 border-t">
+                <span className="text-gray-600">Amount</span>
+                <span className="text-2xl font-medium">₹{cardAmount.toLocaleString()}</span>
               </div>
             </div>
           </Card>

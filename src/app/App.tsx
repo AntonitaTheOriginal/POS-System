@@ -69,6 +69,9 @@ function App() {
           <Route path="/admin/billing" element={<AdminBilling />} />
           <Route path="/admin/tables" element={<AdminTables />} />
           <Route path="/admin/invoice/:orderId" element={<ThermalReceipt />} />
+          
+          {/* Catch-all route */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
         <Toaster />
       </BrowserRouter>

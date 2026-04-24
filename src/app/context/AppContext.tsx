@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User, Order, Table, MenuItem, OrderItem, Settings, mockUsers, mockTables, mockMenuItems, defaultSettings, businessTypeConfigs, defaultMenuTemplates } from '../data/appData';
+import { supabase } from '../lib/supabase';
 
 interface AppContextType {
   // Authentication
@@ -57,6 +58,7 @@ interface AppContextType {
   setOrderType: (type: 'dine-in' | 'takeaway' | null) => void;
   activeOrderId: string | null;
   setActiveOrderId: (id: string | null) => void;
+  isLoading: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -138,6 +140,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [orderType, setOrderType] = useState<'dine-in' | 'takeaway' | null>(null);
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Persistence Effects
   useEffect(() => {
@@ -179,6 +182,55 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  // Supabase Initial Fetch
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Fetch Settings
+        const { data: settingsData } = await supabase.from('settings').select('*').single();
+        if (settingsData) setSettings(settingsData);
+
+        // Fetch Categories
+        const { data: categoriesData } = await supabase.from('categories').select('name');
+        if (categoriesData) setCategories(categoriesData.map(c => c.name));
+
+        // Fetch Menu Items
+        const { data: menuData } = await supabase.from('menu_items').select('*');
+        if (menuData) setMenuItems(menuData);
+
+        // Fetch Users
+        const { data: usersData } = await supabase.from('users').select('*');
+        if (usersData) setUsers(usersData);
+
+        // Fetch Tables
+        const { data: tablesData } = await supabase.from('tables').select('*');
+        if (tablesData) setTables(tablesData);
+
+        // Fetch Orders (including items)
+        const { data: ordersData } = await supabase.from('orders').select('*, order_items(*, menu_items(*))');
+        if (ordersData) {
+          const formattedOrders = ordersData.map(o => ({
+            ...o,
+            items: o.order_items.map((oi: any) => ({
+              ...oi,
+              menuItem: oi.menu_items
+            }))
+          }));
+          setOrders(formattedOrders);
+        }
+
+      } catch (err) {
+        console.error('Supabase fetch error:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   useEffect(() => {
     if (currentUser) {
       sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -205,7 +257,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     sessionStorage.clear();
   };
 
-  const addOrder = (order: Order) => {
+  const addOrder = async (order: Order) => {
+    // Local update
     setOrders(prev => {
       const existingIndex = prev.findIndex(o => o.id === order.id);
       if (existingIndex !== -1) {
@@ -215,24 +268,80 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       return [order, ...prev];
     });
+
+    // Supabase Sync
+    try {
+      const { items, ...orderData } = order;
+      // Convert camelCase to snake_case
+      const supabaseOrder = {
+        id: orderData.id,
+        order_number: orderData.orderNumber,
+        type: orderData.type,
+        table_id: orderData.tableId,
+        subtotal: orderData.subtotal,
+        gst: orderData.gst,
+        total: orderData.total,
+        status: orderData.status,
+        payment_mode: orderData.paymentMode,
+        amount_received: orderData.amountReceived,
+        created_by: orderData.createdBy,
+        completed_at: orderData.completedAt,
+        created_at: orderData.createdAt
+      };
+
+      await supabase.from('orders').upsert([supabaseOrder]);
+
+      if (items && items.length > 0) {
+        const orderItemsData = items.map(item => ({
+          order_id: order.id,
+          menu_item_id: item.menuItem.id,
+          quantity: item.quantity,
+          notes: item.notes
+        }));
+        // Clean up existing items just in case it's an update, then insert
+        await supabase.from('order_items').delete().eq('order_id', order.id);
+        await supabase.from('order_items').insert(orderItemsData);
+      }
+    } catch (error) {
+      console.error('Supabase sync error (addOrder):', error);
+    }
   };
 
-  const updateOrderStatus = (orderId: string, status: Order['status']) => {
+  const updateOrderStatus = async (orderId: string, status: Order['status']) => {
     setOrders(prev => prev.map(order =>
       order.id === orderId ? { ...order, status } : order
     ));
+
+    try {
+      await supabase.from('orders').update({ status }).eq('id', orderId);
+    } catch (error) {
+      console.error('Supabase sync error (updateOrderStatus):', error);
+    }
   };
 
-  const completeOrder = (orderId: string, paymentMode: 'cash' | 'upi', amountReceived: number) => {
+  const completeOrder = async (orderId: string, paymentMode: 'cash' | 'upi', amountReceived: number) => {
+    const completedAt = new Date().toISOString();
+    
     setOrders(prev => prev.map(order =>
       order.id === orderId ? {
         ...order,
         status: 'completed',
         paymentMode,
         amountReceived,
-        completedAt: new Date().toISOString()
+        completedAt
       } : order
     ));
+
+    try {
+      await supabase.from('orders').update({
+        status: 'completed',
+        payment_mode: paymentMode,
+        amount_received: amountReceived,
+        completed_at: completedAt
+      }).eq('id', orderId);
+    } catch (error) {
+      console.error('Supabase sync error (completeOrder):', error);
+    }
 
     // Free up table if it was a dine-in order
     const order = orders.find(o => o.id === orderId);
@@ -312,8 +421,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setUsers(prev => prev.filter(user => user.id !== id));
   };
 
-  const updateSettings = (updates: Partial<Settings>) => {
+  const updateSettings = async (updates: Partial<Settings>) => {
     setSettings(prev => ({ ...prev, ...updates }));
+
+    try {
+      const updatedSettings = { ...settings, ...updates };
+      await supabase.from('settings').update({
+        restaurant_name: updatedSettings.restaurantName,
+        address: updatedSettings.address,
+        phone: updatedSettings.phone,
+        email: updatedSettings.email,
+        business_type: updatedSettings.businessType,
+        gst_percentage: updatedSettings.gstPercentage,
+        currency: updatedSettings.currency,
+        receipt_footer: updatedSettings.receiptFooter
+      }).eq('id', 1);
+    } catch (error) {
+      console.error('Supabase sync error (updateSettings):', error);
+    }
   };
 
   const resetToDefaultMenu = () => {
@@ -394,7 +519,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       orderType,
       setOrderType,
       activeOrderId,
-      setActiveOrderId
+      setActiveOrderId,
+      isLoading
     }}>
       {children}
     </AppContext.Provider>

@@ -135,7 +135,7 @@ export function AdminTables() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-3xl mb-2">Table Management</h2>
-            <p className="text-gray-600">Manage restaurant tables and seating capacity</p>
+            <p className="text-gray-600">Manage tables and seating capacity</p>
           </div>
           {currentUser?.role === 'admin' && (
             <Button onClick={() => setIsAddDialogOpen(true)} className="flex items-center gap-2">
@@ -229,7 +229,7 @@ export function AdminTables() {
           <DialogHeader>
             <DialogTitle>Add New Table</DialogTitle>
             <DialogDescription>
-              Create a new table for your restaurant
+              Create a new table for your business
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">

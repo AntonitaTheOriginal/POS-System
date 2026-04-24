@@ -335,7 +335,7 @@ export function AdminUsers() {
           <DialogHeader>
             <DialogTitle>Add New User</DialogTitle>
             <DialogDescription>
-              Create a new staff account for your restaurant
+              Create a new staff account for your business
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">

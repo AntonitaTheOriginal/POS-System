@@ -503,7 +503,7 @@ export function AdminMenu() {
           <DialogHeader>
             <DialogTitle>Add Menu Item</DialogTitle>
             <DialogDescription>
-              Add a new item to your restaurant menu
+              Add a new item to your menu
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">

@@ -44,21 +44,21 @@ export function AdminSettings() {
       <div className="space-y-6 max-w-4xl">
         <div>
           <h2 className="text-3xl mb-2">Settings</h2>
-          <p className="text-gray-600">Configure restaurant branding and system behavior</p>
+          <p className="text-gray-600">Configure {businessTypeConfigs[localSettings.businessType].name.toLowerCase()} branding and system behavior</p>
         </div>
 
-        {/* Restaurant Branding */}
+        {/* Business Branding */}
         <Card className="p-6 space-y-6">
-          <h3 className="font-medium text-lg border-b pb-2">Restaurant Branding</h3>
+          <h3 className="font-medium text-lg border-b pb-2">Business Branding</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="restaurantName">Restaurant Name</Label>
+              <Label htmlFor="restaurantName">{businessTypeConfigs[localSettings.businessType].name} Name</Label>
               <Input
                 id="restaurantName"
                 value={localSettings.restaurantName}
                 onChange={(e) => setLocalSettings({ ...localSettings, restaurantName: e.target.value })}
-                placeholder="Enter restaurant name"
+                placeholder={`Enter ${businessTypeConfigs[localSettings.businessType].name.toLowerCase()} name`}
               />
             </div>
             <div className="space-y-2">
@@ -105,7 +105,7 @@ export function AdminSettings() {
               id="address"
               value={localSettings.address}
               onChange={(e) => setLocalSettings({ ...localSettings, address: e.target.value })}
-              placeholder="Enter complete restaurant address"
+              placeholder="Enter complete business address"
               rows={3}
             />
           </div>

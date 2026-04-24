@@ -35,7 +35,7 @@ export function CommonLogin() {
             </svg>
           </div>
           <h1 className="text-4xl tracking-tight">SmartServe</h1>
-          <p className="text-gray-600">Restaurant POS System</p>
+          <p className="text-gray-600">SmartServe POS System</p>
         </div>
 
         <div className="space-y-4">
